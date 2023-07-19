@@ -1,5 +1,5 @@
 use argh::FromArgs;
-use log::{debug, error, info, LevelFilter};
+use log::{error, info, LevelFilter};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -140,7 +140,7 @@ fn main() {
                 let stdout_reader = BufReader::new(stdout);
                 let stdout_lines = stdout_reader.lines();
                 for line in stdout_lines {
-                    debug!("{}", line.unwrap());
+                    println!("{}", line.unwrap());
                 }
 
                 child.wait().unwrap();
