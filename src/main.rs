@@ -30,7 +30,7 @@ struct Task {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 struct Options {
-    tasks: HashMap<String, Task>,
+    tasks: Option<HashMap<String, Task>>,
     files: Option<Vec<String>>,
 }
 
@@ -47,20 +47,22 @@ fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
             }
         }
 
-        for (name, task) in options.tasks {
-            if let Some(register_commands) = register.get_mut(&name) {
-                register_commands.push(Commands {
-                    path: path.clone(),
-                    task,
-                });
-            } else {
-                register.insert(
-                    name,
-                    vec![Commands {
+        if let Some(tasks) = options.tasks {
+            for (name, task) in tasks {
+                if let Some(register_commands) = register.get_mut(&name) {
+                    register_commands.push(Commands {
                         path: path.clone(),
                         task,
-                    }],
-                );
+                    });
+                } else {
+                    register.insert(
+                        name,
+                        vec![Commands {
+                            path: path.clone(),
+                            task,
+                        }],
+                    );
+                }
             }
         }
 
