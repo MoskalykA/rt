@@ -11,7 +11,7 @@ use std::{
 };
 
 #[derive(FromArgs)]
-/// Maybe
+/// A tool to facilitate these projects
 struct Args {
     /// command
     #[argh(option, default = "String::from(\"dev\")", short = 'c')]
