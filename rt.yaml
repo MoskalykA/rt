@@ -1,0 +1,24 @@
+tasks:
+  build:
+    commands:
+    - next
+    - build
+    platform: pnpm
+  dev:
+    commands:
+    - next
+    - dev
+    platform: pnpm
+  lint:
+    commands:
+    - next
+    - lint
+    platform: pnpm
+  start:
+    commands:
+    - next
+    - start
+    platform: pnpm
+
+files:
+  - test/a.yaml
