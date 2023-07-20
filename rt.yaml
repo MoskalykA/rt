@@ -1,23 +1,23 @@
 tasks:
   build:
     commands:
-    - next
-    - build
+      - next
+      - build
     platform: pnpm
   dev:
     commands:
-    - next
-    - dev
+      - next
+      - dev
     platform: pnpm
   lint:
     commands:
-    - next
-    - lint
+      - next
+      - lint
     platform: pnpm
   start:
     commands:
-    - next
-    - start
+      - next
+      - start
     platform: pnpm
 
 files:
