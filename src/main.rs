@@ -1,6 +1,6 @@
 use argh::FromArgs;
 use log::{error, info, LevelFilter};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::{
     collections::HashMap,
     env, fs,
@@ -26,15 +26,14 @@ struct Args {
     file_name: String,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Deserialize, Clone)]
 struct Task {
     platform: String,
     commands: Option<Vec<String>>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Deserialize)]
 struct Options {
-    project: Option<String>,
     tasks: Option<HashMap<String, Task>>,
     files: Option<Vec<String>>,
 }
@@ -89,7 +88,7 @@ fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 struct Commands {
     pub path: PathBuf,
     pub task: Task,
