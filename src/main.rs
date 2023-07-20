@@ -103,7 +103,9 @@ fn has_program(program: &str) -> bool {
 }
 
 static PLATFORMS: phf::Map<&'static str, &'static str> = phf_map! {
+    "npm" => "exec",
     "pnpm" => "exec",
+    "yarn" => "run",
     "cargo" => "run",
 };
 
