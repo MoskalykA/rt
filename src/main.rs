@@ -1,5 +1,6 @@
 use argh::FromArgs;
 use log::{error, info, LevelFilter};
+use phf::phf_map;
 use serde::Deserialize;
 use std::{
     collections::HashMap,
@@ -101,6 +102,11 @@ fn has_program(program: &str) -> bool {
     path.is_some()
 }
 
+static PLATFORMS: phf::Map<&'static str, &'static str> = phf_map! {
+    "pnpm" => "exec",
+    "cargo" => "run",
+};
+
 fn main() {
     env_logger::Builder::new()
         .filter_level(LevelFilter::max())
@@ -134,11 +140,16 @@ fn main() {
                     exit(0x0100);
                 }
 
-                let first_command = String::from(if command.task.platform == "pnpm" {
-                    "exec"
+                let first_command = if let Some(command) = PLATFORMS.get(&command.task.platform) {
+                    command.to_string()
                 } else {
-                    "run"
-                });
+                    error!(
+                        "The `{}` platform you specified is not available",
+                        command.task.platform
+                    );
+
+                    exit(0x0100);
+                };
 
                 let full_command = if let Some(commands) = &command.task.commands {
                     vec![
