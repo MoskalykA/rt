@@ -17,12 +17,16 @@ struct Args {
     #[argh(option, default = "String::from(\"dev\")", short = 'c')]
     command: String,
 
+    /// project
+    #[argh(option, short = 'p')]
+    project: Option<String>,
+
     /// file name
     #[argh(option, default = "String::from(\"rt.yaml\")", short = 'f')]
     file_name: String,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 struct Task {
     platform: String,
     commands: Option<Vec<String>>,
@@ -30,6 +34,7 @@ struct Task {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 struct Options {
+    project: Option<String>,
     tasks: Option<HashMap<String, Task>>,
     files: Option<Vec<String>>,
 }
@@ -37,6 +42,14 @@ struct Options {
 fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
     let mut path = env::current_dir().unwrap();
     path = path.join(file_name);
+
+    let path_without_extension = path
+        .with_extension("")
+        .file_name()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
     if Path::exists(&path) {
         let content = fs::read_to_string(path.clone()).unwrap();
@@ -53,6 +66,7 @@ fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
                     register_commands.push(Commands {
                         path: path.clone(),
                         task,
+                        project: path_without_extension.clone(),
                     });
                 } else {
                     register.insert(
@@ -60,6 +74,7 @@ fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
                         vec![Commands {
                             path: path.clone(),
                             task,
+                            project: path_without_extension.clone(),
                         }],
                     );
                 }
@@ -74,10 +89,11 @@ fn read_file(file_name: String, register: &mut HashMap<String, Vec<Commands>>) {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Commands {
     pub path: PathBuf,
     pub task: Task,
+    pub project: String,
 }
 
 fn has_program(program: &str) -> bool {
@@ -98,17 +114,27 @@ fn main() {
     let group = &args.command;
     let commands = commands.get(&args.command).unwrap();
     thread::scope(|s| {
+        let commands: Vec<Commands> = if let Some(project) = args.project {
+            commands
+                .iter()
+                .filter(|command| command.project == project)
+                .cloned()
+                .collect()
+        } else {
+            commands.to_vec()
+        };
+
         for command in commands {
-            if !has_program(&command.task.platform) {
-                error!(
-                    "The `{}` program must be installed on your computer",
-                    command.task.platform
-                );
-
-                exit(0x0100);
-            }
-
             s.spawn(move || {
+                if !has_program(&command.task.platform) {
+                    error!(
+                        "The `{}` program must be installed on your computer",
+                        command.task.platform
+                    );
+
+                    exit(0x0100);
+                }
+
                 let first_command = String::from(if command.task.platform == "pnpm" {
                     "exec"
                 } else {
