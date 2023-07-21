@@ -1,7 +1,4 @@
-on:
-  push:
-    tags:
-      - "*"
+on: release
 
 name: build
 
@@ -22,12 +19,18 @@ jobs:
           command: build
           args: --release
 
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r ubuntu.zip rt
+        working-directory: target/release
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/rt
-          asset_name: rt-ubuntu
+          file: ubuntu.zip
           tag: ${{ github.ref }}
 
   build-win:
@@ -46,12 +49,18 @@ jobs:
           command: build
           args: --release
 
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r windows.zip rt.exe
+        working-directory: target/release
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/rt.exe
-          asset_name: rt-windows
+          file: windows.zip
           tag: ${{ github.ref }}
 
   build-macos:
@@ -70,10 +79,16 @@ jobs:
           command: build
           args: --release
 
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r macos.zip rt
+        working-directory: target/release
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/rt
-          asset_name: rt-macos
+          file: macos.zip
           tag: ${{ github.ref }}
