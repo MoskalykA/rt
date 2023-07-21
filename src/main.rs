@@ -99,8 +99,9 @@ struct Commands {
 fn has_program(program: &str) -> bool {
     Command::new("which")
         .arg(program)
-        .status()
+        .output()
         .unwrap()
+        .status
         .success()
 }
 
