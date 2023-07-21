@@ -102,11 +102,15 @@ fn has_program(program: &str) -> bool {
     path.is_some()
 }
 
-static PLATFORMS: phf::Map<&'static str, &'static str> = phf_map! {
-    "npm" => "exec",
-    "pnpm" => "exec",
-    "yarn" => "run",
-    "cargo" => "run",
+static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map! {
+    "npm" => (if cfg!(windows) {
+        "npm.cmd"
+    } else {
+        "npm"
+    }, "exec"),
+    "pnpm" => ("pnpm", "exec"),
+    "yarn" => ("yarn", "run"),
+    "cargo" => ("cargo", "run")
 };
 
 fn main() {
@@ -142,8 +146,8 @@ fn main() {
                     exit(0x0100);
                 }
 
-                let first_command = if let Some(command) = PLATFORMS.get(&command.task.platform) {
-                    command.to_string()
+                let base = if let Some((base, _)) = PLATFORMS.get(&command.task.platform) {
+                    base.to_string()
                 } else {
                     error!(
                         "The `{}` platform you specified is not available",
@@ -153,21 +157,28 @@ fn main() {
                     exit(0x0100);
                 };
 
-                let full_command = if let Some(commands) = &command.task.commands {
-                    vec![
-                        command.task.platform.clone(),
-                        first_command.clone(),
-                        commands.join(" "),
-                    ]
-                    .join(" ")
+                let perform = if let Some((_, perform)) = PLATFORMS.get(&command.task.platform) {
+                    perform.to_string()
                 } else {
-                    vec![command.task.platform.clone(), first_command.clone()].join(" ")
+                    error!(
+                        "The `{}` platform you specified is not available",
+                        command.task.platform
+                    );
+
+                    exit(0x0100);
                 };
 
-                info!("Running a command from group `{group}` (`{full_command}`)");
+                info!(
+                    "Running a command from group `{group}` (`{}`)",
+                    if let Some(commands) = &command.task.commands {
+                        vec![base.clone(), perform.clone(), commands.join(" ")].join(" ")
+                    } else {
+                        vec![base.clone(), perform.clone()].join(" ")
+                    }
+                );
 
-                let mut process = Command::new(&command.task.platform);
-                process.stdout(Stdio::piped()).arg(&first_command);
+                let mut process = Command::new(&base);
+                process.stdout(Stdio::piped()).arg(&perform);
 
                 if let Some(commands) = &command.task.commands {
                     process.args(commands);
