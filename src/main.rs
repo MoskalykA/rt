@@ -97,9 +97,11 @@ struct Commands {
 }
 
 fn has_program(program: &str) -> bool {
-    let paths = env::var("PATH").unwrap();
-    let path = paths.split(';').find(|path| path.contains(program));
-    path.is_some()
+    Command::new("which")
+        .arg(program)
+        .status()
+        .unwrap()
+        .success()
 }
 
 static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map! {
