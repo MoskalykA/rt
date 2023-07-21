@@ -111,7 +111,11 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
         "npm"
     }, "exec"),
     "pnpm" => ("pnpm", "exec"),
-    "yarn" => ("yarn", "run"),
+    "yarn" => (if cfg!(windows) {
+        "yarn.cmd"
+    } else {
+        "yarn"
+    }, "run"),
     "cargo" => ("cargo", "run")
 };
 
