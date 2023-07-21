@@ -1,0 +1,89 @@
+on: [push, pull_request]
+
+name: build
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install stable with fmt & clippy
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Run cargo check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+
+    build:
+      name: Ubuntu build
+      needs: check
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Install stable
+          uses: actions-rs/toolchain@v1
+          with:
+            toolchain: stable
+
+        - name: Run cargo build
+          uses: actions-rs/cargo@v1
+          with:
+            command: build --release
+
+        - name: Upload to release
+          uses: JasonEtco/upload-to-release@master
+          with:
+            args: target/release/rt
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    build-win:
+      name: Windows build
+      needs: check
+      runs-on: windows-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Install stable
+          uses: actions-rs/toolchain@v1
+          with:
+            toolchain: stable
+
+        - name: Run cargo build
+          uses: actions-rs/cargo@v1
+          with:
+            command: build --release
+
+        - name: Upload to release
+          uses: JasonEtco/upload-to-release@master
+          with:
+            args: target/release/rt.exe
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    build-macos:
+      name: Windows build
+      needs: check
+      runs-on: macos-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Install stable
+          uses: actions-rs/toolchain@v1
+          with:
+            toolchain: stable
+
+        - name: Run cargo build
+          uses: actions-rs/cargo@v1
+          with:
+            command: build --release
+
+        - name: Upload to release
+          uses: JasonEtco/upload-to-release@master
+          with:
+            args: target/release/rt.dmg
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
