@@ -1,28 +1,13 @@
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - "*"
 
 name: build
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install stable with fmt & clippy
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
-
-      - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --release
-
   build:
     name: Ubuntu build
-    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -42,10 +27,11 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/release/rt
+          asset_name: rt-ubuntu
+          tag: ${{ github.ref }}
 
   build-win:
     name: Windows build
-    needs: check
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -65,10 +51,11 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/release/rt.exe
+          asset_name: rt-windows
+          tag: ${{ github.ref }}
 
   build-macos:
     name: MacOs build
-    needs: check
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -87,4 +74,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/rt.dmg
+          file: target/release/rt
+          asset_name: rt-macos
+          tag: ${{ github.ref }}
