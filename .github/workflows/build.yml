@@ -22,12 +22,13 @@ jobs:
           command: build
           args: --release
 
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
-      - name: Zip output
-        run: zip -qq -r ubuntu.zip rt
-        working-directory: target/release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "ubuntu.zip"
+          directory: "target/release"
+          path: "rt"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -52,12 +53,13 @@ jobs:
           command: build
           args: --release
 
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
-      - name: Zip output
-        run: zip -qq -r windows.zip rt.exe
-        working-directory: target/release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "windows.zip"
+          directory: "target/release"
+          path: "rt.exe"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -82,12 +84,13 @@ jobs:
           command: build
           args: --release
 
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
-      - name: Zip output
-        run: zip -qq -r macos.zip rt
-        working-directory: target/release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "macos.zip"
+          directory: "target/release"
+          path: "rt"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2

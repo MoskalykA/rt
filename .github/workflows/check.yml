@@ -19,3 +19,54 @@ jobs:
         with:
           command: check
           args: --release
+
+  build:
+    name: Ubuntu build
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+  build-win:
+    name: Windows build
+    needs: check
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+  build-macos:
+    name: MacOs build
+    needs: check
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
