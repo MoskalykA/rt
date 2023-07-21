@@ -37,12 +37,11 @@ jobs:
           command: build
           args: --release
 
-      - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          args: target/release/rt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/rt
 
   build-win:
     name: Windows build
@@ -61,12 +60,11 @@ jobs:
           command: build
           args: --release
 
-      - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          args: target/release/rt.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/rt.exe
 
   build-macos:
     name: MacOs build
@@ -85,9 +83,8 @@ jobs:
           command: build
           args: --release
 
-      - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          args: target/release/rt.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/rt.dmg
