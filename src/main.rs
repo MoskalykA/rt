@@ -118,6 +118,7 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
         "yarn"
     }, "run"),
     "deno" => ("deno", "run"),
+    "tsc" => ("tsc", ""),
     "cargo" => ("cargo", "run")
 };
 
@@ -176,17 +177,33 @@ fn main() {
                     exit(0x0100);
                 };
 
-                info!(
-                    "Running a command from group `{group}` (`{}`)",
-                    if let Some(commands) = &command.task.commands {
-                        vec![base.clone(), perform.clone(), commands.join(" ")].join(" ")
-                    } else {
-                        vec![base.clone(), perform.clone()].join(" ")
-                    }
-                );
+                let empty_perform = perform.is_empty();
+                if empty_perform {
+                    info!(
+                        "Running a command from group `{group}` (`{}`)",
+                        if let Some(commands) = &command.task.commands {
+                            vec![base.clone(), commands.join(" ")].join(" ")
+                        } else {
+                            base.clone()
+                        }
+                    );
+                } else {
+                    info!(
+                        "Running a command from group `{group}` (`{}`)",
+                        if let Some(commands) = &command.task.commands {
+                            vec![base.clone(), perform.clone(), commands.join(" ")].join(" ")
+                        } else {
+                            vec![base.clone(), perform.clone()].join(" ")
+                        }
+                    );
+                }
 
                 let mut process = Command::new(&base);
-                process.stdout(Stdio::piped()).arg(&perform);
+                process.stdout(Stdio::piped());
+
+                if !empty_perform {
+                    process.arg(&perform);
+                }
 
                 if let Some(commands) = &command.task.commands {
                     process.args(commands);
