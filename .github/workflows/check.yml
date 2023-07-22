@@ -1,13 +1,15 @@
 on:
   pull_request:
     branches:
-      - master
+      - main
 
   push:
     branches:
-      - master
+      - main
+    tags-ignore:
+      - "**"
     paths:
-      - "*.rs"
+      - "src/**"
 
 name: check
 
