@@ -119,7 +119,12 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
     }, "run"),
     "deno" => ("deno", "run"),
     "tsc" => ("tsc", ""),
-    "cargo" => ("cargo", "run")
+    "cargo" => ("cargo", "run"),
+    "sass" => (if cfg!(windows) {
+        "sass.cmd"
+    } else {
+        "sass"
+    }, "")
 };
 
 fn main() {
