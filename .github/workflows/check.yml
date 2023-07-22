@@ -1,8 +1,8 @@
 on:
   pull_request:
   push:
-    tags:
-      - "!v*"
+    tags-ignore:
+      - v0.*
 
 name: check
 
