@@ -117,6 +117,7 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
     } else {
         "yarn"
     }, "run"),
+    "deno" => ("deno", "run"),
     "cargo" => ("cargo", "run")
 };
 
