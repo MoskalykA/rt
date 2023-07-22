@@ -2,11 +2,12 @@ on:
   pull_request:
     branches:
       - master
+
   push:
     branches:
       - master
     tags-ignore:
-      - "v**"
+      - "**"
     paths:
       - "src/**"
 
