@@ -2,7 +2,9 @@ on:
   pull_request:
   push:
     tags-ignore:
-      - v0.*
+      - "*"
+    paths:
+      - "src/**.rs"
 
 name: check
 
@@ -11,23 +13,14 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - 'src/**'
-
       - uses: actions/checkout@v2
       - name: Install stable with fmt & clippy
-        if: steps.changes.outputs.src == 'true'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: rustfmt, clippy
 
       - name: Run cargo check
-        if: steps.changes.outputs.src == 'true'
         uses: actions-rs/cargo@v1
         with:
           command: check
