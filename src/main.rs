@@ -11,14 +11,12 @@ use std::{
     thread,
 };
 
-// yeah
-
 #[derive(FromArgs)]
 /// A tool to facilitate these projects
 struct Args {
-    /// command
-    #[argh(option, default = "String::from(\"dev\")", short = 'c')]
-    command: String,
+    /// group
+    #[argh(option, default = "String::from(\"dev\")", short = 'g')]
+    group: String,
 
     /// project
     #[argh(option, short = 'p')]
@@ -126,7 +124,14 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
         "sass.cmd"
     } else {
         "sass"
-    }, "")
+    }, ""),
+    "jest" => (if cfg!(windows) {
+        "jest.cmd"
+    } else {
+        "jest"
+    }, ""),
+    "git" => ("git", ""),
+    "prettier" => ("prettier.cmd", "")
 };
 
 fn main() {
@@ -138,8 +143,15 @@ fn main() {
     let args: Args = argh::from_env();
     read_file(args.file_name, &mut commands);
 
-    let group = &args.command;
-    let commands = commands.get(&args.command).unwrap();
+    let group = &args.group;
+    let commands = if let Some(commands) = commands.get(group) {
+        commands
+    } else {
+        error!("The `{group}` group does not exist");
+
+        exit(0x0100);
+    };
+
     thread::scope(|s| {
         let commands: Vec<Commands> = if let Some(project) = args.project {
             commands
