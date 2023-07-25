@@ -129,7 +129,9 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
         "jest.cmd"
     } else {
         "jest"
-    }, "")
+    }, ""),
+    "git" => ("git", ""),
+    "prettier" => ("prettier.cmd", "")
 };
 
 fn main() {
