@@ -137,7 +137,14 @@ fn main() {
     read_file(args.file_name, &mut commands);
 
     let group = &args.command;
-    let commands = commands.get(&args.command).unwrap();
+    let commands = if let Some(commands) = commands.get(&args.command) {
+        commands
+    } else {
+        error!("The `{group}` group does not exist");
+
+        exit(0x0100);
+    };
+
     thread::scope(|s| {
         let commands: Vec<Commands> = if let Some(project) = args.project {
             commands
