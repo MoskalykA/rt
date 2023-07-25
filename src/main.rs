@@ -14,9 +14,9 @@ use std::{
 #[derive(FromArgs)]
 /// A tool to facilitate these projects
 struct Args {
-    /// command
+    /// group
     #[argh(option, default = "String::from(\"dev\")", short = 'c')]
-    command: String,
+    group: String,
 
     /// project
     #[argh(option, short = 'p')]
@@ -141,8 +141,8 @@ fn main() {
     let args: Args = argh::from_env();
     read_file(args.file_name, &mut commands);
 
-    let group = &args.command;
-    let commands = if let Some(commands) = commands.get(&args.command) {
+    let group = &args.group;
+    let commands = if let Some(commands) = commands.get(group) {
         commands
     } else {
         error!("The `{group}` group does not exist");
