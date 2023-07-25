@@ -124,6 +124,11 @@ static PLATFORMS: phf::Map<&'static str, (&'static str, &'static str)> = phf_map
         "sass.cmd"
     } else {
         "sass"
+    }, ""),
+    "jest" => (if cfg!(windows) {
+        "jest.cmd"
+    } else {
+        "jest"
     }, "")
 };
 
