@@ -15,7 +15,7 @@ use std::{
 /// A tool to facilitate these projects
 struct Args {
     /// group
-    #[argh(option, default = "String::from(\"dev\")", short = 'c')]
+    #[argh(option, default = "String::from(\"dev\")", short = 'g')]
     group: String,
 
     /// project
